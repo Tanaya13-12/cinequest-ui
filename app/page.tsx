@@ -1,11 +1,5 @@
-import Image from "next/image";
+import FandomFinal from "./FandomFinal";
 
-export default function Home() {
-  return (
-    <div style={{ padding: "40px", fontSize: "24px" }}>
-
-      <h1> The Landing Page </h1>
-      
-    </div>
-  );
+export default function Page() {
+  return <FandomFinal />;
 }

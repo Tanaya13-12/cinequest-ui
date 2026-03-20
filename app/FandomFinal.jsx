@@ -3,6 +3,10 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import FandomTitle from "./components/FandomTitle";
+import GlassHUD from "./components/GlassHUD";
+import SecondSection from "./components/SecondSection";
+
 /* ===== SCROLL SECTION STYLES ===== */
 
 const sectionStyle = {
@@ -291,7 +295,7 @@ function Particles() {
             boxShadow:p.ash?"none":`0 0 ${p.sz*4}px ${p.sz}px rgba(200,65,0,0.5)`,
             filter:p.ash?"blur(0.6px)":"none",
           }}
-          animate={{ y:[0,-(window.innerHeight+80)],x:[0,p.drift],opacity:[0,p.ash?.4:.82,p.ash?.18:.5,0] }}
+          animate={{ y:[0,-1000],x:[0,p.drift],opacity:[0,p.ash?.4:.82,p.ash?.18:.5,0] }}
           transition={{ duration:p.dur,delay:p.del,repeat:Infinity,ease:"linear" }}
         />
       ))}
@@ -349,48 +353,7 @@ const VineSVG = () => {
 /* ─────────────────────────────────────────────────────────────
    METALLIC FANDOM TITLE  (medium-large, rock-solid)
 ───────────────────────────────────────────────────────────── */
-function FandomTitle() {
-  const FS = "clamp(52px, 8.5vw, 112px)"; /* ← reduced so background breathes */
-  return (
-    <div style={{ position:"relative",display:"inline-block" }}>
-      {/* shadow lift layer */}
-      <div aria-hidden style={{
-        position:"absolute",inset:0,zIndex:0,display:"flex",alignItems:"center",justifyContent:"center",
-        fontFamily:"'Playfair Display',serif",fontSize:FS,fontWeight:900,lineHeight:0.88,letterSpacing:"0.06em",
-        color:"transparent",userSelect:"none",pointerEvents:"none",
-        textShadow:"3px 7px 18px rgba(0,0,0,1),0 4px 35px rgba(0,0,0,1),0 0 70px rgba(0,0,0,0.95),0 0 140px rgba(0,0,0,0.8)",
-      }}>CINEQUEST</div>
-      {/* golden hour halo */}
-      <div aria-hidden style={{
-        position:"absolute",inset:0,zIndex:1,display:"flex",alignItems:"center",justifyContent:"center",
-        fontFamily:"'Playfair Display',serif",fontSize:FS,fontWeight:900,lineHeight:0.88,letterSpacing:"0.06em",
-        color:"transparent",userSelect:"none",pointerEvents:"none",
-        textShadow:[
-          "0 0 7px rgba(255,212,90,0.95)",
-          "0 0 22px rgba(255,185,50,0.75)",
-          "0 0 50px rgba(255,148,28,0.52)",
-          "0 0 95px rgba(255,110,0,0.32)",
-          "0 0 165px rgba(255,80,0,0.16)",
-        ].join(","),
-      }}>CINEQUEST</div>
-      {/* metallic silver text */}
-      <motion.h1
-        initial={{ opacity:0, scale:0.92 }}
-        animate={{ opacity:1, scale:1 }}
-        transition={{ delay:0.4, duration:2, ease:[0.16,1,0.3,1] }}
-        style={{
-          position:"relative",zIndex:2,
-          fontFamily:"'Playfair Display',serif",
-          fontSize:FS,fontWeight:900,lineHeight:0.88,letterSpacing:"0.06em",
-          color:"transparent",
-          backgroundClip:"text",WebkitBackgroundClip:"text",
-          backgroundImage:"linear-gradient(165deg,#ffffff 0%,#eee8da 16%,#d5c8b0 34%,#a89278 50%,#c8b898 64%,#eae0ce 80%,#ffffff 94%,#f0e8d8 100%)",
-          userSelect:"none",
-        }}
-      >CINEQUEST</motion.h1>
-    </div>
-  );
-}
+
 
 /* ─────────────────────────────────────────────────────────────
    CIRCUIT PATTERN  (inside HUD — SVG decorative lines)
@@ -478,153 +441,7 @@ const HUD_DATA = [
 /* ─────────────────────────────────────────────────────────────
    GLASSMORPHISM HUD  (capsule, circuit pattern, neon border)
 ───────────────────────────────────────────────────────────── */
-function GlassHUD() {
-  const [gi, setGi] = useState(-1);
-  useEffect(() => {
-    const loop = () => {
-      const id = setTimeout(() => {
-        setGi(Math.floor(Math.random()*HUD_DATA.length));
-        setTimeout(() => { setGi(-1); loop(); }, 140+Math.random()*110);
-      }, 2800+Math.random()*6500);
-      return id;
-    };
-    const id = loop();
-    return () => clearTimeout(id);
-  }, []);
 
-  return (
-    <motion.div
-      initial={{ opacity:0, y:20, scale:0.95 }}
-      animate={{ opacity:1, y:0, scale:1 }}
-      transition={{ delay:2.5, duration:1.4, ease:[0.16,1,0.3,1] }}
-      style={{ position:"relative", marginBottom:"24px" }}
-    >
-      {/* LED float spheres */}
-      <div style={{ position:"absolute",left:0,right:0,top:"-14px",height:"28px",pointerEvents:"none" }}>
-        {HUD_DATA.map((d,i)=>(
-          <motion.div key={i}
-            animate={{ y:[-4,4,-4], opacity:[0.42,1,0.42] }}
-            transition={{ duration:2.1+i*0.28,delay:i*0.32,repeat:Infinity,ease:"easeInOut" }}
-            style={{
-              position:"absolute",left:`${11+i*19}%`,top:"50%",transform:"translateY(-50%)",
-              width:"4px",height:"4px",borderRadius:"50%",
-              background:d.color,boxShadow:`0 0 8px 3px ${d.glow}`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* capsule gradient border */}
-      <div style={{
-        borderRadius:"999px",padding:"1px",
-        background:"linear-gradient(135deg,rgba(255,40,40,0.5),rgba(40,140,255,0.5),rgba(255,150,0,0.45),rgba(155,40,240,0.45),rgba(22,200,130,0.42))",
-        boxShadow:[
-          "0 0 28px rgba(255,40,40,0.10)",
-          "0 0 50px rgba(40,140,255,0.08)",
-          "0 8px 28px rgba(0,0,0,0.65)",
-          "inset 0 1px 0 rgba(255,255,255,0.05)",
-        ].join(","),
-      }}>
-        <div style={{
-          borderRadius:"997px",
-          background:"rgba(6,3,14,0.80)",
-          backdropFilter:"blur(22px)",WebkitBackdropFilter:"blur(22px)",
-          overflow:"hidden",position:"relative",
-        }}>
-          {/* circuit decoration */}
-          <CircuitPattern color="rgba(255,255,255,0.055)"/>
-
-          {/* inner top sheen */}
-          <div style={{ position:"absolute",top:0,left:"6%",right:"6%",height:"0.5px",
-            background:"linear-gradient(to right,transparent,rgba(255,255,255,0.16),transparent)" }}/>
-
-          {/* scanning shimmer */}
-          <motion.div
-            animate={{ x:["-120%","220%"] }}
-            transition={{ duration:4.2,repeat:Infinity,ease:"linear",repeatDelay:2.8 }}
-            style={{
-              position:"absolute",top:0,bottom:0,left:0,width:"28%",
-              background:"linear-gradient(to right,transparent,rgba(255,255,255,0.032),transparent)",
-              pointerEvents:"none",
-            }}
-          />
-
-          {/* stats row */}
-          <div style={{ display:"flex",alignItems:"stretch" }}>
-            {HUD_DATA.map((d,i) => {
-              const glitching = gi===i;
-              return (
-                <div key={i} style={{
-                  flex:1,display:"flex",flexDirection:"column",alignItems:"center",
-                  padding:"14px 10px",position:"relative",
-                  borderRight: i<HUD_DATA.length-1 ? `0.5px solid ${d.color}1e` : "none",
-                }}>
-                  {/* icon */}
-                  <motion.div
-                    animate={{ opacity:[0.65,1,0.65], filter:[`drop-shadow(0 0 2px ${d.color})`,`drop-shadow(0 0 5px ${d.color})`,`drop-shadow(0 0 2px ${d.color})`] }}
-                    transition={{ duration:2+i*0.25,repeat:Infinity,ease:"easeInOut" }}
-                    style={{ marginBottom:"7px" }}
-                  >
-                    <d.Icon color={d.color}/>
-                  </motion.div>
-
-                  {/* label */}
-                  <div style={{
-                    fontFamily:"'Courier New',monospace",
-                    fontSize:"clamp(6px,0.58vw,8px)",letterSpacing:"0.4em",
-                    color:"rgba(185,170,210,0.45)",textTransform:"uppercase",marginBottom:"5px",
-                  }}>{d.label}</div>
-
-                  {/* value */}
-                  <div style={{ position:"relative" }}>
-                    {glitching && <>
-                      <div style={{
-                        position:"absolute",top:0,left:0,pointerEvents:"none",
-                        fontFamily:"'Playfair Display',serif",fontWeight:900,
-                        fontSize:"clamp(16px,2vw,26px)",letterSpacing:"0.05em",
-                        color:`${d.color}66`,transform:"translate(-3px,1px) skewX(-3deg)",
-                        clipPath:"inset(38% 0 24% 0)",whiteSpace:"nowrap",
-                      }}>{d.val}</div>
-                      <div style={{
-                        position:"absolute",top:0,left:0,pointerEvents:"none",
-                        fontFamily:"'Playfair Display',serif",fontWeight:900,
-                        fontSize:"clamp(16px,2vw,26px)",letterSpacing:"0.05em",
-                        color:"rgba(0,225,210,0.2)",transform:"translate(3px,-1px)",
-                        clipPath:"inset(8% 0 55% 0)",whiteSpace:"nowrap",
-                      }}>{d.val}</div>
-                    </>}
-                    <motion.div
-                      animate={{
-                        textShadow: glitching
-                          ? `0 0 14px ${d.color},0 0 32px ${d.color}aa,0 0 60px ${d.color}55`
-                          : [`0 0 9px ${d.glow}`,`0 0 20px ${d.glow}`,`0 0 9px ${d.glow}`],
-                        color: glitching ? d.color : ["rgba(242,235,218,0.96)","rgba(255,255,255,0.99)","rgba(242,235,218,0.96)"],
-                      }}
-                      transition={{ duration:glitching?0.12:3,repeat:glitching?0:Infinity }}
-                      style={{
-                        fontFamily:"'Playfair Display',serif",fontWeight:900,
-                        fontSize:"clamp(16px,2vw,26px)",letterSpacing:"0.05em",
-                        whiteSpace:"nowrap",lineHeight:1,
-                      }}
-                    >{d.val}</motion.div>
-                  </div>
-
-                  {/* upside-down pulse line */}
-                  <motion.div
-                    animate={{ scaleX:[0.12,1,0.12],opacity:[0.18,0.52,0.18] }}
-                    transition={{ duration:2.5,repeat:Infinity,ease:"easeInOut",delay:i*0.18 }}
-                    style={{ marginTop:"6px",height:"0.5px",width:"38px",
-                      background:`linear-gradient(to right,transparent,${d.color},transparent)` }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 /* ─────────────────────────────────────────────────────────────
    WAND CURSOR  +  GOLD DUST TRAIL
@@ -871,102 +688,8 @@ export default function FandomFinal() {
           letterSpacing:"0.52em",color:"rgba(115,102,75,.32)",
         }}
       >WHERE EVERY FRAME TELLS A STORY</motion.div>
+       <SecondSection />
 
-{/* ===== SECOND PAGE ===== */}
-<div style={{
-  height: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: "0 10%",
-  position: "relative",
-  zIndex: 50,
-  background: "transparent",
-}}>
-
-  <div style={{
-    width: "100%",
-    maxWidth: "1100px",
-    display: "flex",
-    gap: "20px",
-flexWrap: "wrap",
-  }}>
-
-    {/* CARD */}
-    {[
-{
-  title: "ABOUT CINEQUEST",
-  text: `CINEQUEST is a dynamic and immersive pop culture quiz event designed for fans of movies, anime, and web series.
-
-It challenges participants to explore fictional universes and test their knowledge across characters, storylines, hidden details, and iconic cinematic moments.
-
-This is not just about memory—it’s about observation, attention to detail, and true fandom depth.`
-},
-{
-  title: "RULES & FORMAT",
-  text: `• Team of 2–4 members
-• Multiple elimination rounds
-• No mobile phones or external help
-• Time-bound answers
-• Points decide elimination
-
-Rounds include:
-• Guess characters, scenes, dialogues
-• Identify clips/images
-• Spot inconsistencies`
-},
-{
-  title: "EVENT DETAILS",
-  text: `📅 Date: 4 April 2026
-💰 Entry Fee: ₹299 per team
-🏆 Prize Pool: Up to ₹15,000
-
-Round-wise eliminations leading to final winners announcement.`,
- },
-].map((item, i) => (
-  
-
-
-      <motion.div
-        key={i}
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: i * 0.3, duration: 0.8 }}
-        style={{
-          flex: 1,
-          padding: "40px",
-          borderRadius: "20px",
-          backdropFilter: "blur(20px)",
-          background: "rgba(255,255,255,0.05)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          color: "white",
-          boxShadow: "0 0 40px rgba(255,0,50,0.15)",
-        }}
-      >
-        <h1 style={{
-          fontSize: "28px",
-          marginBottom: "20px",
-          color: "#ff2a2a",
-        }}>
-          {item.title}
-        </h1>
-
-        <p style={{
-          lineHeight: "1.8",
-          whiteSpace: "pre-line",
-        }}>
-          {item.text}
-        </p>
-      </motion.div>
-
-    ))}
-
-  </div>
-</div>
-{/* CURSOR + EFFECTS */}
-<GoldDust trail={dust} />
-<WandCursor x={mouse.x} y={mouse.y} hot={btnHot} />
-
-</div>
-);
+</div>  
+  );
 }
